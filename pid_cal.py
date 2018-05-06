@@ -9,12 +9,9 @@ _max_X = 100
 _max_Y = 80
 ser = serial.Serial('COM2', 115200, timeout=0)
 
-
 dis = np.zeros(_max_X + 1)
 dis2 = dis
-fig, ax = plt.subplots()
-
-
+fig, ax = plt.subplots(num = 'Calibration PID')
 
 line, = ax.plot(dis, '.-', markersize=2, markerfacecolor='k', markeredgecolor='k' )
 ax.set_ylim(10, _max_Y)
@@ -79,13 +76,17 @@ def update(frame):
     #    plt.setp(line, 'color', 'b', 'linewidth', 2.0)
     return line,
 tstart = time.time()   
+
+te = fig.text(0.15, 0.9,  'FPS:')
 def init():
     global tstart
-    print ('FPS:' , 100/(time.time()-tstart))
+    te.set_text('FPS:' + str('%.2f' %(100/(time.time()-tstart))))
+    fig.canvas.draw()
     tstart = time.time()
     return line,
 tstart = time.time()
 ani = animation.FuncAnimation(fig, update,frames=100, init_func=init, interval=20, blit=True)
+
 #PID 参数设置框
 axprev = plt.axes([0.8,0.9, 0.1,0.05])
 D_TB =TextBox(axprev,'D:', initial='1')
@@ -107,6 +108,9 @@ def d_submit(text):
 P_TB.on_submit(p_submit)
 I_TB.on_submit(i_submit)
 D_TB.on_submit(d_submit)
+
+
+
 plt.show()
 ser.close()
 print ('FPS:' , 100/(time.time()-tstart))
